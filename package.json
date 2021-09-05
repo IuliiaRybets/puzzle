@@ -1,0 +1,30 @@
+{
+  "name": "game",
+  "version": "1.0.0",
+  "description": "puzzle",
+  "main": "main.js",
+  "dependencies": {
+    "gulp-concat": "^2.6.1"
+  },
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-sass": "^5.0.0",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "sass": "^1.39.0",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.4.2"
+  },
+  "scripts": {
+    "build": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/IuliiaRybets/puzzle.git"
+  },
+  "author": "Iuliia Rybets",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/IuliiaRybets/puzzle/issues"
+  },
+  "homepage": "https://github.com/IuliiaRybets/puzzle#readme"
+}

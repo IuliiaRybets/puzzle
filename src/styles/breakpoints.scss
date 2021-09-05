@@ -1,0 +1,21 @@
+@use 'sass:map';
+
+$breakpoint-small: 576px;
+$breakpoint-medium: 768px;
+$breakpoint-large: 992px;
+$breakpoint-xlarge: 1200px;
+
+$grid-width: 100%; 
+$grid-distance: 15px;
+
+$container-max-widths: (
+  sm: 540px,
+  md: 720px,
+  lg: 960px,
+  xl: 1140px,
+);
+
+
+@function make-max-widths-container-width($key: $container-max-widths) {
+    @return map.get($container-max-widths, $key);
+}

@@ -1,0 +1,196 @@
+@use 'sass:math';
+@import 'colors';
+@import 'breakpoints';
+
+.container {
+  max-width: $grid-width;
+}
+
+img {
+  width: 100%;
+  height: auto;
+}
+
+.row {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+  [class^="col-"] {
+    padding: 1rem;
+    position: relative;
+    flex-grow: 0;
+    flex-shrink: 0;
+    box-sizing: border-box;
+  }
+
+  @for $i from 1 through 12 {
+    .col-xl-#{$i} {
+      width: #{math.div($i, 12)*100%};
+    }
+  }
+}
+
+.btn-submit {
+  color: $el-blue;
+  background-color: $el-mint;
+  border-color: $el-mint;
+}
+
+.btn {
+  display: inline-block;
+  font-weight: 400;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  box-sizing: border-box;
+  border: transparent;
+}
+
+.form {
+  display: block;
+  width: $grid-width;
+  padding: .375rem .75rem;
+  box-sizing: border-box;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: $el-ui-grey-4;
+  background-color: $el-white;
+  background-clip: padding-box;
+  border: 1px solid $el-ui-grey-4;
+  border-radius: .25rem;
+}
+
+.fileinput {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  color: $el-ui-grey-4;
+  background-color: $el-white;
+  border: .075rem solid $el-ui-grey-4;
+  border-radius: .25rem;
+  box-shadow: inset 0 0.2rem 0.4rem rgb(0 0 0 / 5%);
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  line-height: 1.5;
+  box-sizing: border-box;
+  width: 100%;
+  white-space: nowrap;
+
+  input {
+    /*position: absolute;*/
+    width: 1px;
+    height: 1px;
+  }
+  
+  .filename {
+    flex-grow: 1;
+    flex-basis: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: .375rem .75rem;
+  }
+
+  .openbtn {
+    color: $el-white;
+    background-color: $el-ui-grey-4;
+    flex-grow: 0;
+    flex-shrink: 0;
+    padding: .375rem .75rem;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+}
+
+.line{
+  width: $grid-width;
+  border-bottom: 7px solid $el-mint;
+}
+
+.puzzle-container {
+  position: relative;
+}
+
+.counter {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+
+    .timer {
+      color: $el-blue;
+      background-color: $el-mint;
+      padding: .375rem .75rem;
+      border-radius: .25rem;
+      display: inline-block;
+      -webkit-animation: scale-up-center 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) 3 both;
+              animation: scale-up-center 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) 3 both;
+    }
+
+}
+
+
+@media screen and (max-width: $breakpoint-xlarge) {
+ 
+  .container {
+    max-width: make-max-widths-container-width(xl);
+  }
+
+  @for $i from 1 through 12 {
+    .row .col-xl-#{$i} {
+      width: #{math.div($i, 12)*100%};
+    }
+  }
+}
+
+
+@media screen and (max-width: $breakpoint-large) {
+    .container {
+      max-width: make-max-widths-container-width(lg);
+    }
+
+    @for $i from 1 through 12 {
+      .row .col-l-#{$i} {
+        width: #{math.div($i, 12)*100%};
+      }
+    }
+}
+  
+@media screen and (max-width: $breakpoint-medium) {
+  .container {
+    max-width: make-max-widths-container-width(md);
+  }
+
+  @for $i from 1 through 12 {
+    .row .col-m-#{$i} {
+      width: #{math.div($i, 12)*100%};
+    }
+  }
+}
+
+@media screen and (max-width: $breakpoint-small) {
+  .container {
+    max-width: make-max-widths-container-width(sm);
+  }
+
+  @for $i from 1 through 12 {
+    .row .col-s-#{$i} {
+      width: #{math.div($i, 12)*100%};
+    }
+  }
+}
+  

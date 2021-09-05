@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset='utf-8'>
+        <title>Game</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1' />
+        <link rel='stylesheet' href='./css/style.css' />
+    </head>
+    <body>
+        <div id='container' class="container">
+                <div class="row counter">
+                    <div class="col-xl-5 col-l-5 col-m-4 col-s-4">
+                        <div class="line"></div>
+                    </div>
+                    <div class="col-xl-2 col-l-2 col-m-4 col-s-4">
+                        <div id="counter">
+                            <h1 class="timer"> 3 </h1>
+                        </div>
+                    </div>
+                    <div class="col-xl-5 col-l-5 col-m-4 col-s-4">
+                        <div class="line"></div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xl-3 col-l-4 col-m-6 col-s-12">
+                        <input type="number" id="rows" class="form" />
+                    </div>
+                    <div class="col-xl-3 col-l-4 col-m-6 col-s-12">
+                        <input type="number" id="cols" class="form" />
+                    </div>
+                    <div class="col-xl-3 col-l-4 col-m-6 col-s-12">
+                        <label class="fileinput">
+                            <input type="file" id="img" />
+                            <div class="filename" id="imgfilename"></div>
+                            <div class="openbtn">Öffnen</div>
+                        </label>
+                    </div>
+                    <div class="col-xl-3 col-l-4 col-m-6 col-s-12">
+                        <input type="submit" id="submit" class="btn btn-submit"  />
+                    </div>
+                </div>
+                <div class="row" id="puzzle"></div>
+        </div>
+        
+        <script src='./js/main.js'></script>
+    </body>
+</html>
