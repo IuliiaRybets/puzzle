@@ -5,20 +5,18 @@ const elemPuzzle = document.getElementById("puzzle") as HTMLDivElement;
 const elemImgFilename = document.getElementById("imgfilename") as HTMLDivElement;
 const timer = parseInt((3000 / 1000).toFixed(1));
 
-function counter(rows: number, cols: number, image: string): void {
-    let start = Date.now();
-    let interval = setInterval( () => {
-        let diff = timer - (((Date.now() - start) / 1000) | 0);
-        document.getElementById("counter").innerHTML = `
-            <h1 class="timer"> ${diff} </h1>
-        `;
+let currDraggingPuzzleTile: HTMLDivElement | null = null;
 
-        if (diff <= 0) {
-            clearInterval(interval);
-            document.getElementById("counter").innerHTML = `<h1 class="timer"> START </h1>`;
-            loadPuzzle(rows, cols, image);
-        } 
-    }, 1000);
+function showCounter(value: string | number, isError?: boolean): void {
+    document.getElementById("counter").innerHTML = `
+        <h1 class="timer"> ${value} </h1>
+    `;
+
+    if ( isError ) {
+        document.querySelector(".counter").classList.add('error');
+    } else {
+        document.querySelector(".counter").classList.remove('error');
+    }
 }
 
 function loadPuzzle(rows: number, cols: number, image: string): void {    
@@ -31,11 +29,15 @@ function loadPuzzle(rows: number, cols: number, image: string): void {
 
     const puzzleDivs: Array<HTMLDivElement> = [];
 
-    for (let x = 0; x < rows; x++) {
-        for ( let y = 0; y < cols; y++) {
+    let i = 0;
+
+    for ( let y = 0; y < cols; y++) {
+        for (let x = 0; x < rows; x++) {
             const width = x * w / rows + "px";
             const height = y * h / cols + "px";
             const div = document.createElement("div");
+            div.className = 'puzzle-tile';
+            div.dataset.index = '' + i;
 
             div.style.flexGrow = '0'; 
             div.style.flexShrink = '0';
@@ -46,19 +48,154 @@ function loadPuzzle(rows: number, cols: number, image: string): void {
             div.style.backgroundPositionY = "-" + height;
             div.style.backgroundSize = w + "px";
             div.style.backgroundRepeat = "no-repeat";
+            div.draggable = true;
+
+            div.addEventListener('dragstart', dragStart);
+            div.addEventListener('dragend', dragEnd);
+            div.addEventListener('dragover', dragOver);
+            div.addEventListener('dragenter', dragEnter);
+            div.addEventListener('dragleave', dragLeave);
+            div.addEventListener('drop', drop);
 
             puzzleDivs.push(div);
+            i++;
         }
     }
 
     shuffleArray(puzzleDivs);
-
+    
     for ( const div of puzzleDivs ) {
         puzzleCont.appendChild(div);
     }
 
     document.getElementById("imgPzl").style.display = "none";
+
 }
+
+function dragStart(evt: Event): void {
+    if ( ! running ) {
+        evt.preventDefault();
+
+        return;
+    }
+
+    currDraggingPuzzleTile = this;
+
+    this.style.boxShadow = '10px 10px 20px rgba(0,0,0,0.5)';
+}
+  
+function dragEnd(): void {
+    currDraggingPuzzleTile = null;
+
+    this.style.boxShadow = 'none';
+}
+
+function dragOver(evt: Event): void {
+    evt.preventDefault();
+}
+
+function dragEnter(): void {
+    this.style.opacity = '0.5';
+}
+
+function dragLeave(): void {
+    this.style.opacity = '1';
+}
+
+function isFinished(): boolean {
+    const puzzleTitles = document.querySelectorAll('.puzzle-container .puzzle-tile') as NodeListOf<HTMLDivElement>;
+
+    for ( let i = 0; i < puzzleTitles.length; i++ ) {
+        if ( puzzleTitles[i].dataset.index !== ('' + i) ) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function checkIsFinished() {
+    if ( isFinished() ) {
+        finished = true;
+
+        showCounter('Finished!');
+        document.getElementById("submit").removeAttribute("disabled");
+    }
+}
+
+function swapChildElements(parent: HTMLDivElement, child1: HTMLDivElement, child2: HTMLDivElement): void {
+    const tmpElem = document.createElement('div');
+
+    if ( !parent.contains(child1) || !parent.contains(child2) ) {
+        // Child is not valid to be dropped, don't swap it
+        return;
+    }
+
+    parent.replaceChild(tmpElem, child1);
+    parent.replaceChild(child1, child2);
+    parent.replaceChild(child2, tmpElem);
+}
+
+function drop() {
+
+    if ( ! currDraggingPuzzleTile ) {
+        return;
+    }
+
+    this.style.opacity = '1';
+    this.style.boxShadow = 'none';
+
+    currDraggingPuzzleTile.style.opacity = '1';
+    currDraggingPuzzleTile.style.boxShadow = 'none';
+
+    swapChildElements(this.parentElement, this, currDraggingPuzzleTile);
+
+    checkIsFinished();
+}
+
+function sleep(ms: number): Promise<void> {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+}
+
+let running = false;
+let finished = false;
+
+async function runGame(rows: number, cols: number, imageFileURI: string) {
+    if ( running ) {
+        return;
+    }
+
+    running = true;
+    finished = false;
+
+    for ( let counter = 3; counter >= 1; counter-- ) {
+        showCounter(counter);
+
+        await sleep(1000);
+    }
+
+    showCounter('Start');
+
+    await sleep(1000);
+
+    loadPuzzle(rows, cols, imageFileURI);
+
+    for ( let counter = rows*cols*2; counter >= 0 && !finished; counter-- ) {
+        showCounter(counter);
+
+        await sleep(1000);
+    }
+
+    running = false;
+
+    if ( finished ) {
+        return;
+    }
+
+    showCounter('Failed', true);
+    document.getElementById("submit").removeAttribute("disabled");
+}
+
 
 function shuffleArray<T>(arr: Array<T>): void {
     for (let i = arr.length - 1; i > 0; i--) {
@@ -86,30 +223,37 @@ function toBase64 ( file: File ): Promise<any> {
 async function onSubmit(evt: MouseEvent): Promise<void> {
     evt.preventDefault();
 
+    if ( running ) {
+        return;
+    }
+
+    document.getElementById("submit").setAttribute("disabled", "disabled");
+
     const rows = parseInt(inputRows.value);
     const cols = parseInt(inputCols.value);
     const imageFile = inputImg.files[0];
-    const imageBase64Uri = await toBase64(imageFile);
-    console.log(rows, cols, imageFile);
-    if(rows && cols && imageFile) {
-        counter(rows, cols, imageBase64Uri);
-
-        elemPuzzle.innerHTML = `
-            <div class="col-xl-12">
-                <div id="puzzle-container" class="puzzle-container">
-                    <img id="imgPzl" src="${imageBase64Uri}" alt="puzzle" >
-                </div>
-            </div> `;
-    } else {
+  
+    if(!rows || !cols || !imageFile || (rows === 1 && cols === 1)) {
         elemPuzzle.innerHTML = `
         <div class="col-xl-12">
-            <div id="puzzle-container" class="puzzle-container">
-                <h3>Bitte fühlen Sie alle Fehlder ein</h3>
+            <div id="puzzle-container" class="puzzle-container error">
+                <h3>Bitte fühlen Sie alle Felder aus</h3>
             </div>
         </div> `;
+
+        return;
     }
-   
+
+    const imageBase64Uri = await toBase64(imageFile);
+
+    elemPuzzle.innerHTML = `
+        <div class="col-xl-12">
+            <div id="puzzle-container" class="puzzle-container">
+                <img id="imgPzl" src="${imageBase64Uri}" alt="puzzle" >
+            </div>
+        </div> `;
     
+    runGame(cols, rows, imageBase64Uri);
 }
 
 function updateImgFilename(): void {
@@ -121,12 +265,12 @@ function updateImgFilename(): void {
 }
 
 function main(): void {
-    // document.getElementById('container').innerHTML = this.puzzle();
-
+   
     document.getElementById("submit").addEventListener("click", onSubmit);
     inputImg.addEventListener('change', updateImgFilename);
-
+    
     updateImgFilename();
+   
 }
 
 main();

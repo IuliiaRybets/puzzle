@@ -2,6 +2,15 @@
 @import 'colors';
 @import 'breakpoints';
 
+@font-face {
+  font-family: 'Open Sans';
+  src: url('OpenSans-Regular');
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
 .container {
   max-width: $grid-width;
 }
@@ -16,6 +25,7 @@ img {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  align-items: flex-end;
 
   [class^="col-"] {
     padding: 1rem;
@@ -36,6 +46,10 @@ img {
   color: $el-blue;
   background-color: $el-mint;
   border-color: $el-mint;
+
+  &:hover {
+    background-color: $el-petrol;
+  }
 }
 
 .btn {
@@ -55,6 +69,12 @@ img {
   border-radius: .25rem;
   box-sizing: border-box;
   border: transparent;
+  cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
 }
 
 .form {
@@ -115,15 +135,16 @@ img {
   }
 }
 
-.line{
-  width: $grid-width;
-  border-bottom: 7px solid $el-mint;
-}
-
 .puzzle-container {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+
+  .puzzle-tile {
+    img {
+      pointer-events: none;
+    }
+  }
 }
 
 .counter {
@@ -132,6 +153,11 @@ img {
     justify-content: center;
     align-items: center;
     text-align: center;
+
+    .line{
+      width: $grid-width;
+      border-bottom: 7px solid $el-mint;
+    }
 
     .timer {
       color: $el-blue;
@@ -143,8 +169,20 @@ img {
               animation: scale-up-center 1s cubic-bezier(0.390, 0.575, 0.565, 1.000) 3 both;
     }
 
+    &.error .timer {
+      background-color: $error-color;
+      color: $error-text-color;
+    }
+
+    &.error .line {
+      border-bottom-color: $error-color;
+    }
 }
 
+.error {
+  justify-content: center;
+  color: $error-color;
+}
 
 @media screen and (max-width: $breakpoint-xlarge) {
  
@@ -195,4 +233,4 @@ img {
     }
   }
 }
-  
+
